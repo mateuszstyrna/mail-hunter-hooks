@@ -1,62 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-class Form extends React.Component {
+function Form( props ) {
 
-	constructor( props ) {
-		super( props );
-		this.state = {
-			domain: "",
-			path: ""
-		};
-		this.handleChange = this.handleChange.bind( this );
-		this.handleSubmit = this.handleSubmit.bind( this );
-	}
+	const [ form, setForm ] = useState( {
+		domain: "",
+		path: ""
+	} );
 
-	handleSubmit( event ) {
+	const handleSubmit = ( event ) => {
 		event.preventDefault();
-		this.props.toggleLoader( true );
+		props.toggleLoader( true );
 
-		const domain = this.state.domain;
-		const path = this.state.path;
+		const domain = form.domain;
+		const path = form.path;
 
 		fetch( `./mailHunter.php?domain=${ domain }&path=${ path }` )
 		.then( ( response ) => {
-			try {
-				JSON.parse( response );
-			} catch ( e ) {
-				return [ "An error has occured. Please make sure provided data are correct." ];
-			}
 			return response.json();
 		} )
 		.then( ( data )=> {
-			this.props.toggleLoader( false );
-			this.props.getResults( data );
-			this.props.toggleDidSearch( true );
+			console.log( data );
+			props.toggleLoader( false );
+			props.getResults( data );
+			props.toggleDidSearch( true );
 		} );
-	}
+	};
 
-	handleChange( event ) {
+	const handleChange = ( event ) => {
 		const target = event.target;
 	    const value = target.value;
 	    const name = target.name;
-		this.setState( {
-      		[name]: value
+		setForm( ( prev ) => {
+				return {
+					...prev,
+	      			[ name ]: value
+				};
       	} );
-	}
+	};
 
-	render() {
-		return <form className="mailHunter__form" onSubmit={ this.handleSubmit }>
-		<label htmlFor="domain" className="mailHunter__label">
-			Domain:
-			<input onChange={ this.handleChange } type="text" id="domain" name="domain" placeholder="example.com" className="mailHunter__input mailHunter__input--text" />
-		</label>
-		<label htmlFor="path" className="mailHunter__label">
-			Path (optional):
-			<input onChange={ this.handleChange } type="text" id="path" name="path" placeholder="/path/" className="mailHunter__input mailHunter__input--text" />
-		</label>
-			<input type="submit" name="go" value="Look for emails" className="mailHunter__input mailHunter__input--button" />
-		</form>;
-	}
+	return (
+		<form className="mailHunter__form" onSubmit={ handleSubmit }>
+			<label htmlFor="domain" className="mailHunter__label">
+				Domain:
+				<input onChange={ handleChange } type="text" id="domain" name="domain" placeholder="example.com" className="mailHunter__input mailHunter__input--text" />
+			</label>
+			<label htmlFor="path" className="mailHunter__label">
+				Path (optional):
+				<input onChange={ handleChange } type="text" id="path" name="path" placeholder="/path/" className="mailHunter__input mailHunter__input--text" />
+			</label>
+				<input type="submit" name="go" value="Look for emails" className="mailHunter__input mailHunter__input--button" />
+		</form>
+	);
 }
 
 export default Form;

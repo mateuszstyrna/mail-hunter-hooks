@@ -1,13 +1,13 @@
 import React from 'react';
 
-class Results extends React.Component {
+function Results( props ) {
 
-	render() {
-		return <div className="mailHunter__results">
-			{ this.props.didSearch ?
-					this.props.results.length > 0 ?
+	return (
+		<div className="mailHunter__results">
+			{ props.didSearch ?
+					props.results.length > 0 ?
 						<ul>
-							{ this.props.results.map( ( email ) => {
+							{ props.results.map( ( email ) => {
 								return <li key={email}>{ email }</li>
 							} ) }
 						</ul>
@@ -17,8 +17,8 @@ class Results extends React.Component {
 				:
 					""
 			}
-		</div>;
-	}
+		</div>
+		);
 }
 
 export default Results;
